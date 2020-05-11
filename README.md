@@ -7,7 +7,7 @@ A program that graphs some of the effects of COVID-19 including:
 * Change in pollution change estimates
 * Confirmed/active/dead/recovered patients
 
-Data is retrieved manually for items and pollution change while the data on patients is retrieved using an [API](https://covid19api.com/#details) who's data is sourced from Johns Hopkins CSSE.
+Data is retrieved manually for items and pollution change while the data on patients is retrieved using an [API](https://covid19api.com) who's data is sourced from Johns Hopkins CSSE.
 
 ## Installation
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install packages

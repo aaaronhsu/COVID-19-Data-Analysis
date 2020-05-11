@@ -32,3 +32,4 @@ python main.py
 
 ## Known Bugs
 Program crashes if given bad input
+Program crashes if start date preceeds 1/22 or end date succeeds yesterday (Deaths button)

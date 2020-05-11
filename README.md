@@ -25,6 +25,10 @@ Edit line 8 to match the path of the root folder
 # example path
 path = 'D://Python/Data Analysis Project/'
 ```
+Run file with
+```bash
+python main.py
+```
 
 ## Known Issues
 

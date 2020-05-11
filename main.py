@@ -6,7 +6,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import pandas as pd
 import re
 
-path = 'D://Coding/Python/AnnualPython/Data Analysis Project/'
+path = '' # path of root folder ex: 'D://Python/Data Analysis Project/'
 
 # Menu
 def menuWindow(previousWindow = None):
@@ -16,6 +16,7 @@ def menuWindow(previousWindow = None):
         menu.configure(bg='light cyan')
         menu.title('Menu')
 
+        # title
         label = Label(menu, text = 'Effects of COVID-19\nBy Aaron Hsu, Ella Krechmer,\nSasha Motiellal, Maret Aulenbach,\nLogan Byers, and Israel Pina',
               bd = 1,
               relief = 'solid',
@@ -63,7 +64,7 @@ def pricesWindow(previousWindow):
         wipesS = BooleanVar(pricesSelection)
         wipesL = BooleanVar(pricesSelection)
 
-        # checkboxes
+        # creation of checkboxes
         Checkbutton(pricesSelection, text = 'Toilet Paper (Small Pack, 12)', variable = toiletPaperS, onvalue = 1, offvalue = 0, bg='light cyan').pack()
         Checkbutton(pricesSelection, text = 'Toilet Paper (Bulk, 24)', variable = toiletPaperL, onvalue = 1, offvalue = 0, bg='light cyan').pack()
         Checkbutton(pricesSelection, text = 'Hand Sanitizer (travel size, 2 fl. oz.)', variable = handSanitizerS, onvalue = 1, offvalue = 0, bg='light cyan').pack()
@@ -145,12 +146,14 @@ def pollutionWindow(previousWindow):
         previousWindow.withdraw()
         countrySelection.configure(bg='light cyan')
 
+        # values of checkboxes
         europe = BooleanVar(countrySelection)
         china = BooleanVar(countrySelection)
         unitedStates = BooleanVar(countrySelection)
         india = BooleanVar(countrySelection)
         glob = BooleanVar(countrySelection)
 
+        # creation of checkboxes
         Checkbutton(countrySelection, text = 'Europe', variable = europe, onvalue = 1, offvalue = 0, bg='light cyan').pack()
         Checkbutton(countrySelection, text = 'China', variable = china, onvalue = 1, offvalue = 0, bg='light cyan').pack()
         Checkbutton(countrySelection, text = 'United States', variable = unitedStates, onvalue = 1, offvalue = 0, bg='light cyan').pack()
@@ -267,6 +270,7 @@ def deathWindow(previousWindow):
 
 
 def deathData(country, start, end):
+        # pulls info from API
         url = 'https://api.covid19api.com/total/country/' + country
 
         payload = {}
@@ -276,6 +280,7 @@ def deathData(country, start, end):
 
         unformattedData = str(response.text.encode('utf8'))
 
+        # finds the index of each occurance of keyword and puts in a list
         confirmed = [m.start() for m in re.finditer("\"Confirmed\": ", unformattedData)]
         deaths = [m.start() for m in re.finditer("\"Deaths\": ", unformattedData)]
         recovered = [m.start() for m in re.finditer("\"Recovered\": ", unformattedData)]
@@ -284,18 +289,20 @@ def deathData(country, start, end):
 
 
         data = {'Date': [], 
-                        'Confirmed': [],
-                        'Deaths': [],
-                        'Recovered': [],
-                        'Active': [],}
+                'Confirmed': [],
+                'Deaths': [],
+                'Recovered': [],
+                'Active': [],}
 
+        # isolates the data by shifting indexes of keywords
         for i in range(len(confirmed)):
                 data['Confirmed'].append(int(unformattedData[confirmed[i] + 13 : deaths[i] - 7]))
                 data['Deaths'].append(int(unformattedData[deaths[i] + 10 : recovered[i] - 7]))
                 data['Recovered'].append(int(unformattedData[recovered[i] + 13 : active[i] - 7]))
                 data['Active'].append(int(unformattedData[active[i] + 10 : date[i] - 7]))
                 data['Date'].append(unformattedData[date[i] + 14 : date[i] + 19])
-                
+
+        # updates data so that it only contains data within timeframe                
         startIndex = data['Date'].index(start)
         endIndex = data['Date'].index(end) + 1
 
@@ -327,7 +334,7 @@ def graphDeaths(data, country):
         plt.grid(True, color = 'k')
         
         if len(data['Date']) > 30: 
-                # hides x-axis if too many data points
+                # hides x-axis if there are than 30 days
                 plt.xticks(color='w')
         menuWindow()
         plt.show()

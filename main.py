@@ -4,6 +4,7 @@ import requests
 from random import uniform
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import pandas as pd
+import re
 
 path = ''
 
@@ -235,168 +236,100 @@ def deathWindow(previousWindow):
         formattedCountry = formattedCountry[:-1]
 
 
-        # asks user to input date
-        unformattedDate = simpledialog.askstring('Start Date', 'Insert Start Date (ex: 4/14):')
-        if unformattedDate is None:
+        # asks user to input start date
+        unformattedStartDate = simpledialog.askstring('Start Date', 'Insert Start Date (ex: 4/14):')
+        if unformattedStartDate is None:
                 menuWindow()
-        unformattedDate1 = simpledialog.askstring('End Date', 'Insert End Date (ex: 4/28):')
-        if unformattedDate1 is None:
+        
+        formattedStartDate = ''
+        for i in unformattedStartDate.split('/'):
+                if int(i) < 10:
+                        formattedStartDate += '0' + i + '-'
+                else:
+                        formattedStartDate += i + '-'
+        formattedStartDate = formattedStartDate[:-1]
+
+        # asks user to input end date
+        unformattedEndDate = simpledialog.askstring('End Date', 'Insert End Date (ex: 4/28):')
+        if unformattedEndDate is None:
                 menuWindow()
-        temp_dict = {}
-        # creates two variables that symbolize the start and end of temp_dict. The second variable will be added to the dictionary where it says "here"
-        for i in unformattedDate:
-                if i == "/":
-                        startpoint = int(unformattedDate[:unformattedDate.find(i)])
-                        temp_var = unformattedDate[unformattedDate.find(i)+1:]
-                        temp_var = int(temp_var)
-                        temp_dict[1] = [startpoint,temp_var]
-                        startpoint = startpoint*100 + temp_var
-                        startpoint1 = startpoint
-        for i in unformattedDate1:
-                if i == "/":
-                        endpoint = int(unformattedDate1[:unformattedDate1.find(i)])
-                        temp_var1 = unformattedDate1[unformattedDate1.find(i)+1:]
-                        temp_var1 = int(temp_var1)
-                        endpoint = endpoint*100 + temp_var1
-        arr = []
-        a = 2
-        startpoint += 7
-        # this gets all the dates in intervals of one week
-        while True:
-                if startpoint % 100 > 30:
-                        startpoint += 70
-                if startpoint >= endpoint:
-                        break
-                temp_dict[a] = [startpoint // 100, startpoint % 100]
-                a += 1
-                startpoint += 7
 
-        # here
-        endpoint = int(unformattedDate1[:unformattedDate1.find("/")])
-        temp_dict[a] = [endpoint,temp_var1]
-
-        # formats the userinput to work with API
-        formattedList = []
-        for j in temp_dict.values():
-                if int(j[1]) == 1:
-                        formattedDate = "0" + str(j[0]) + "30"
-                elif int(j[1]) < 10:
-                        formattedDate = "0" + str(j[0]) + "-0" + str(j[1]-1)
+        formattedEndDate = ''
+        for i in unformattedEndDate.split('/'):
+                if int(i) < 10:
+                        formattedEndDate += '0' + i + '-'
                 else:
-                        formattedDate = "0" + str(j[0]) + "-" + str(j[1]-1)
-                formattedList.append(formattedDate)
-        actualList = []
-        for j in temp_dict.values():
-                if int(j[1]) < 10:
-                        formattedDate = "0" + str(j[0]) + "-0" + str(j[1])
-                else:
-                        formattedDate = "0" + str(j[0]) + "-" + str(j[1])
-                actualList.append(formattedDate)
-        # calls formatting data
-        deathData(formattedCountry,formattedList,actualList,a)
+                        formattedEndDate += i + '-'
+        formattedEndDate = formattedEndDate[:-1]
+        
 
-# parses everything
-def searcher(string,element):
-        temp_string = string
-        output = 0
-        placeholder = temp_string.count(element)
-        for i in range(placeholder):
-                starter = temp_string.find(element)+3+len(element)
-                temp_string1 = temp_string[starter:ender(temp_string,starter)]
-                temp_string = temp_string.replace(element,"",1)
-                output += int(temp_string1)
-        return output
+        deathData(formattedCountry, formattedStartDate, formattedEndDate)
 
-# returns the position of the start of the numbers
-def ender(string,start):
-        return (start+string[start:].find(","))
 
-# Can be used to create a random color for each bar/line
-def randomRGBA():
-    r = uniform(0,1)
-    b = uniform(0,1)
-    g = uniform(0,1)
-    a = uniform(0,1)
-    rgb_value = [r, g, b, a]
-    return rgb_value
+def deathData(country, start, end):
+        url = 'https://api.covid19api.com/total/country/' + country
 
-def deathData(country,formattedList,actualList,distance):
-        data = {}
-        # grabs the data for all of the dates
-        temp_storage_stuff = [""]
-        url = "https://api.covid19api.com/live/country/" + country + "/status/confirmed/date/2020-" + formattedList[0] + "T13:13:30Z"
         payload = {}
         headers= {}
+
         response = requests.request("GET", url, headers=headers, data = payload)
-        unformattedData0 = str(response.text.encode('utf8'))
-        for i in range(len(formattedList)):
-                unformattedData1 = unformattedData0
-                unformattedData = ""
-                for a in range(unformattedData1.count(actualList[i])):
-                        temp_string_stuff = unformattedData1[unformattedData1.find(actualList[i])-240:unformattedData1.find(actualList[i])]
-                        unformattedData += temp_string_stuff
-                        unformattedData1 = unformattedData1.replace(actualList[i],"",1)
-                # data[date] = [country,confirmed,deaths,recovered,active]
-                stuff1 = [country,searcher(unformattedData,"Confirmed"),searcher(unformattedData,"Deaths"),searcher(unformattedData,"Recovered"),searcher(unformattedData,"Active")]
-                if stuff1 == temp_storage_stuff:
-                        distance -= 1
-                        continue
-                else:
-                        data[actualList[i]] = stuff1
-                temp_storage_stuff = data[actualList[i]]
 
-        # a total number of things equivalent to the variable distance (one of the inputs of this function) need to be graphed
-        graphDeaths(data)
+        unformattedData = str(response.text.encode('utf8'))
 
-def graphDeaths(data):
-        # graphs data for confired, deaths, active, and recovery
-        deaths = []
-        confirmed = []
-        recovered = []
-        active = []
-        country = []
-        menuWindow()
-        count = []
-        s = 0
-        for i in data:
-                count.append(s)
-                s += 1
+        confirmed = [m.start() for m in re.finditer("\"Confirmed\": ", unformattedData)]
+        deaths = [m.start() for m in re.finditer("\"Deaths\": ", unformattedData)]
+        recovered = [m.start() for m in re.finditer("\"Recovered\": ", unformattedData)]
+        active = [m.start() for m in re.finditer("\"Active\": ", unformattedData)]
+        date = [m.start() for m in re.finditer("\"Date\": ", unformattedData)]
+
+
+        data = {'Date': [], 
+                        'Confirmed': [],
+                        'Deaths': [],
+                        'Recovered': [],
+                        'Active': [],}
+
+        for i in range(len(confirmed)):
+                data['Confirmed'].append(int(unformattedData[confirmed[i] + 13 : deaths[i] - 7]))
+                data['Deaths'].append(int(unformattedData[deaths[i] + 10 : recovered[i] - 7]))
+                data['Recovered'].append(int(unformattedData[recovered[i] + 13 : active[i] - 7]))
+                data['Active'].append(int(unformattedData[active[i] + 10 : date[i] - 7]))
+                data['Date'].append(unformattedData[date[i] + 14 : date[i] + 19])
                 
-        for i in data:
-                country.append(data[i][0])
-        for i in data:
-                deaths.append(data[i][1])
-        for i in data:
-                confirmed.append(data[i][2])
-        for i in data:
-                recovered.append(data[i][3])
-        for i in data:
-                active.append(data[i][4]) 
-                
-        x1 = count
-        y1 = deaths
-        x2 = count
-        y2 = confirmed
-        x3 = count
-        y3 = recovered
-        x4 = count
-        y4 = active
-        
-        plt.plot (x1,y1,
+        startIndex = data['Date'].index(start)
+        endIndex = data['Date'].index(end) + 1
+
+        data['Confirmed'] = data['Confirmed'][startIndex : endIndex]
+        data['Deaths'] = data['Deaths'][startIndex : endIndex]
+        data['Recovered'] = data['Recovered'][startIndex : endIndex]
+        data['Active'] = data['Active'][startIndex : endIndex]
+        data['Date'] = data['Date'][startIndex : endIndex]
+
+        graphDeaths(data, country)
+
+def graphDeaths(data, country):
+        # graphs data for confirmed, deaths, active, and recovery
+
+        plt.plot (data['Date'], data['Confirmed'],
                   label = 'Confirmed')
-        plt.plot (x2,y2,
+        plt.plot (data['Date'], data['Deaths'],
                   label = 'Deaths')
-        plt.plot (x3,y3,
+        plt.plot (data['Date'], data['Recovered'],
                   label = 'Recovered')
-        plt.plot (x4,y4,
+        plt.plot (data['Date'], data['Active'],
                   label = 'Active')
-        
-        plt.title(country[0])
-        plt.ylabel('People')
-        plt.xlabel('Weeks since initial date')
 
-        plt.legend()
+        plt.title(country)
+        plt.ylabel('People')
+        plt.xlabel('Date')
+
+        plt.legend(frameon = False)
         plt.grid(True, color = 'k')
+        
+        if len(data['Date']) > 30: 
+                # hides x-axis if too many data points
+                plt.xticks(color='w')
+
         plt.show()
 
 # starts program

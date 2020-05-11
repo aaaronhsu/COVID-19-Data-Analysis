@@ -6,7 +6,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import pandas as pd
 import re
 
-path = ''
+path = 'D://Coding/Python/AnnualPython/Data Analysis Project/'
 
 # Menu
 def menuWindow(previousWindow = None):
@@ -319,7 +319,7 @@ def graphDeaths(data, country):
         plt.plot (data['Date'], data['Active'],
                   label = 'Active')
 
-        plt.title(country)
+        plt.title(country[0].upper() + country[1:])
         plt.ylabel('People')
         plt.xlabel('Date')
 
@@ -329,7 +329,7 @@ def graphDeaths(data, country):
         if len(data['Date']) > 30: 
                 # hides x-axis if too many data points
                 plt.xticks(color='w')
-
+        menuWindow()
         plt.show()
 
 # starts program

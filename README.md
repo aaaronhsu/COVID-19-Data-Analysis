@@ -30,8 +30,5 @@ Run file in console with
 python main.py
 ```
 
-## Known Issues
-
-Deaths Section: Dates before 4/13 will not work for most countries, as the API that is being used does not have data before 4/13.
-
-Deaths Section: Dates closer to present date may also not work due to the API not being updated yet.
+## Known Bugs
+Program crashes if given bad input

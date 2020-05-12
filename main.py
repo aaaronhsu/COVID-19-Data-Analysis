@@ -6,7 +6,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import pandas as pd
 import re
 
-path = '' # path of root folder ex: 'D://Python/Data Analysis Project/'
+path = 'D://Coding/Python/AnnualPython/Data Analysis Project/' # path of root folder ex: 'D://Python/Data Analysis Project/'
 
 # Menu
 def menuWindow(previousWindow = None):
@@ -46,12 +46,13 @@ def pricesWindow(previousWindow):
         previousWindow.withdraw()
         pricesSelection.configure(bg='light cyan')
         pricesSelection.title('Prices of Items')
+        pricesSelection.geometry('400x310')
         label = Label(pricesSelection, text = 'Select item(s):',
-              bd = 1,
+              bd = 0,
               relief = 'solid',
               width = 15,
               height = 2,
-              bg = 'white')
+              bg = 'light cyan')
         label.pack()
         
         # values of checkbox variables
@@ -76,16 +77,16 @@ def pricesWindow(previousWindow):
 
         # button that creates graph
         graphPrices = Button(pricesSelection, text = 'Graph Selected', bg='white', command = lambda:pricesData([toiletPaperS, toiletPaperL, handSanitizerS, handSanitizerL, waterGal, waterBot, wipesS, wipesL]))
-        graphPrices.pack()
-
+        graphPrices.place(x=50, y=250)
+       
         # button that graphs all
         graphAll = Button(pricesSelection, text = 'Graph All', bg='white', command = lambda:pricesData())
-        graphAll.pack()
-
+        graphAll.place(x=168, y=250)
+       
         # return to menu button
         menuButton = Button(pricesSelection, text = 'Return to Menu', bg='white', command = lambda:menuWindow(pricesSelection))
-        menuButton.pack()
-
+        menuButton.place(x=250, y=250)
+        
 def pricesData(checkboxes = None):
         data = {'Items': [],
         'Price Before Corona': [],
@@ -144,6 +145,7 @@ def pollutionWindow(previousWindow):
         # closes menu and opens pollution window
         countrySelection = Tk()
         previousWindow.withdraw()
+        countrySelection.geometry('400x225')
         countrySelection.configure(bg='light cyan')
 
         # values of checkboxes
@@ -162,16 +164,16 @@ def pollutionWindow(previousWindow):
 
         # button that creates graph
         graphPrices = Button(countrySelection, text = 'Graph', command = lambda:pollutionData([europe, china, unitedStates, india, glob]), bg='white')
-        graphPrices.pack()
-
+        graphPrices.place(x=97, y=150)
+       
         # button that graphs all
         graphAll = Button(countrySelection, text = 'Graph All', command = lambda:pollutionData(), bg = 'white')
-        graphAll.pack()
-
+        graphAll.place(x=150, y=150)
+        
         # return to menu button
         menuButton = Button(countrySelection, text = 'Return to Menu', command = lambda:menuWindow(countrySelection), bg='white')
-        menuButton.pack()
-
+        menuButton.place(x=220, y=150)
+       
 def pollutionData(checkboxes = None):
         with open(path + 'pollution.csv', 'r') as f:
                 read = f.readlines()
@@ -217,7 +219,7 @@ def graphPollution(data):
         bar1.get_tk_widget().pack()
         df = df[['Countries', 'Pollution estimate before', 'Pollution estimate after']].groupby('Countries').sum()
         df.plot(kind='bar', legend=True, ax=ax1)
-        ax1.set_title('Estimates of Change In Pollution Around the World for 2020 (by percent change)')
+        ax1.set_title('Estimates of Change In Pollution for 2020 (by % change)')
 
 
 
